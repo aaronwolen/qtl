@@ -63,3 +63,24 @@ test_that("Individuals with missing genotypes are handled", {
                  "2 individuals with phenotypes but no genotypes")
   expect_equal(nind(mg2), nind(csv))
 })
+
+context("Exporting data")
+
+write.cross(tdy, "tidy", filestem = "tidy/temp")
+
+test_that("Files exported in tidy format", {
+  expect_true(file.exists("tidy/temp_gen.csv"))
+  expect_true(file.exists("tidy/temp_phe.csv"))
+  expect_true(file.exists("tidy/temp_map.csv"))
+})
+
+test_that("Cross can be created from exported files", {
+  tdy2 <- read.cross("tidy", "tidy", genfile = "temp_gen.csv", 
+                     mapfile = "temp_map.csv", phefile = "temp_phe.csv",
+                     genotypes = c("AA", "AB", "BB", "not BB", "not AA"))
+  expect_equivalent(tdy2, tdy)
+})
+
+# cleanup
+unlink(dir("tidy", "temp", full.names = TRUE))
+
